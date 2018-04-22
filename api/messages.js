@@ -1,8 +1,6 @@
 const router = require('express').Router();
 const builder = require('botbuilder');
 var tableName = 'botdata';
-var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
-var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 // Create chat connector for communicating with the Bot Framework Service
 const chatConnector = new builder.ChatConnector({
   appId: process.env.MicrosoftAppId,
@@ -13,11 +11,15 @@ const chatConnector = new builder.ChatConnector({
 const bot = new builder.UniversalBot(chatConnector, function (session, args) {
   session.send('You reached the default message handler. You said \'%s\'.', session.message.text);
 });
-// Add root dialog
-bot.dialog('/', function (session) {
-  session.send('Watson... come here!');
-});
-bot.set('storage', tableStorage);
+
+bot.dialog('askName', [
+  function (session) {
+      builder.Prompts.text(session, 'Hi! What is your name?');
+  },
+  function (session, results) {
+      session.endDialogWithResult(results);
+  }
+]);
 
 router.post('/', (req, res, next) => {
   chatConnector.listen()

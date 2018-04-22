@@ -8,24 +8,15 @@ const callConnector = new calling.CallConnector({
   appPassword: 'c;s87jZz39:Q!=g['
 });
 const bot = new calling.UniversalCallBot(callConnector);
+bot.dialog('/', function (session) {
+  session.send('Watson... come here!');
+});
 
 router.post('/', (req, res, next) => {
   callConnector.listen()
 })
 
-// Add root dialog
-bot.dialog('/', function (session) {
-  session.send('Watson... come here!');
-});
 
-bot.dialog('askName', [
-  function (session) {
-      builder.Prompts.text(session, 'Hi! What is your name?');
-  },
-  function (session, results) {
-      session.endDialogWithResult(results);
-  }
-]);
 //var inMemoryStorage = new builder.MemoryBotStorage();
 
 // This is a dinner reservation bot that uses a waterfall technique to prompt users for input.
